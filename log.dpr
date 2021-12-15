@@ -3,9 +3,9 @@ program log;
 uses
   System.StartUpCopy,
   FMX.Forms,
-  main in 'main.pas' {frmMain},
-  note in 'note.pas' {frmNote},
-  ListViewSaveLoad in 'ListViewSaveLoad.pas',
+  Main in 'Main.pas' {frmMain},
+  Note in 'Note.pas' {frmNote},
+  ListViewUtils in 'ListViewUtils.pas',
   Model in 'Model.pas';
 
 {$R *.res}

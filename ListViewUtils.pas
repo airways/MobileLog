@@ -1,4 +1,4 @@
-unit ListViewSaveLoad;
+unit ListViewUtils;
 
 interface
 
@@ -84,6 +84,7 @@ var
   SubFields: TStringDynArray;
   Item: TListViewItem;
   meta: TMetaFields;
+  LocalDateTime: TDateTime;
 begin
   Strings := TStringList.Create;
   try
@@ -91,16 +92,10 @@ begin
     ListView.Items.Clear;
     for i := 0 to Strings.Count-1 do begin
       Fields := SplitString(Strings[i], #9);
+
       Item := ListView.Items.Add;
       meta := TMetaFields.Create;
       Item.TagObject := meta;
-
-      // Title and tag
-      Item.Text := Fields[0].Replace('~e~', #3)
-                                 .Replace('~t~', #9)
-                                 .Replace('~n~', #10)
-                                 .Replace('~r~', #13);
-      Item.Tag := Fields[1].ToInteger;
 
       // Meta Fields
       SubFields := SplitString(Fields[2], #3);
@@ -110,6 +105,17 @@ begin
           meta.Updated := ISO8601ToDate(SubFields[2]);
         end;
       end;
+
+      LocalDateTime := TTimeZone.Local.ToLocalTime(meta.Created);
+      Item.Detail := DateTimeToStr(LocalDateTime);
+
+      // Title and tag
+      Item.Text := Fields[0].Replace('~e~', #3)
+                                 .Replace('~t~', #9)
+                                 .Replace('~n~', #10)
+                                 .Replace('~r~', #13);
+      Item.Tag := Fields[1].ToInteger;
+
 
       // Body
       Item.TagString := Fields[3].Replace('~e~', #3)

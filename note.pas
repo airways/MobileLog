@@ -1,4 +1,4 @@
-unit note;
+unit Note;
 
 interface
 
@@ -21,7 +21,6 @@ type
     procedure btnSaveClick(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);
     procedure btnDeleteClick(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
     nEditing: integer;
@@ -29,6 +28,8 @@ type
     { Public declarations }
     procedure NewItem();
     procedure EditItem(itemId: integer);
+    function WordToTag(word: string): integer;
+    function TagToWord(tag: integer): string;
   end;
 
 var
@@ -37,12 +38,83 @@ var
 implementation
 
 uses
-  main,
+  Main,
   Model,
   System.DateUtils,
   FMX.DialogService;
 
 {$R *.fmx}
+
+{* Logic Functions *}
+
+procedure TfrmNote.NewItem();
+begin
+  nEditing := -1;
+  txtTitle.Text := '';
+  txtMemo.Text := '';
+  btnDelete.Visible := false;
+  Show;
+  txtTitle.SetFocus;
+end;
+
+procedure TfrmNote.EditItem(itemId: integer);
+var
+  item: TListViewItem;
+  i: integer;
+  tagName: string;
+begin
+  nEditing := itemId;
+  item := frmMain.lstItems.Items[nEditing];
+  txtTitle.Text := item.Text;
+  tagName := TagToWord(item.Tag);
+  for i := 0 to cboTag.items.Count - 1 do
+  begin
+    if cboTag.Items[i] = tagName then
+    begin
+      cboTag.ItemIndex := i;
+      Break;
+    end;
+  end;
+  txtMemo.Text := item.TagString;
+  btnDelete.Visible := true;
+  Show;
+  txtMemo.SetFocus;
+end;
+
+function TfrmNote.WordToTag(word: string): Integer;
+var
+  i: integer;
+begin
+  if word = '' then
+  begin
+    Result := 0;
+  end else begin
+    Result := 1;
+    word := UpperCase(word);
+    for i := 0 to word.Length do
+    begin
+      Result := Result * 26 + integer(word.Chars[i]) - 10;
+    end;
+  end;
+end;
+
+function TfrmNote.TagToWord(tag: Integer): string;
+var
+  i: integer;
+  tagName: string;
+begin
+  for i := 1 to cboTag.Items.Count-1 do
+  begin
+    tagName := cboTag.Items[i];
+    if WordToTag(tagName) = tag then
+    begin
+      Result := tagName;
+      Break;
+    end;
+  end;
+end;
+
+{* Event Handlers *}
 
 procedure TfrmNote.btnCancelClick(Sender: TObject);
 begin
@@ -66,81 +138,34 @@ begin
           frmMain.SaveData;
         end;
       end;
-
     end);
   end;
 end;
 
 procedure TfrmNote.btnSaveClick(Sender: TObject);
 var
-  item: TListViewItem;
-  meta: TMetaFields;
+  Item: TListViewItem;
+  Meta: TMetaFields;
+  LocalDateTime: TDateTime;
 begin
   if nEditing = -1 then
   begin
-    item := frmMain.lstItems.Items.Insert(0);
-    meta := TMetaFields.Create;
-    item.TagObject := meta;
-    meta.Created := TTimeZone.Local.ToUniversalTime(Now);
+    Item := frmMain.lstItems.Items.Insert(0);
+    Meta := TMetaFields.Create;
+    Item.TagObject := Meta;
+    Meta.Created := TTimeZone.Local.ToUniversalTime(Now);
+    LocalDateTime := TTimeZone.Local.ToLocalTime(meta.Created);
+    Item.Detail := DateTimeToStr(LocalDateTime);
   end else begin
-    item := frmMain.lstItems.Items[nEditing];
-    meta := TMetaFields(item.TagObject);
+    Item := frmMain.lstItems.Items[nEditing];
+    Meta := TMetaFields(item.TagObject);
   end;
-  meta.Updated := TTimeZone.Local.ToUniversalTime(Now);
-  item.Text := txtTitle.Text;
-  item.Tag := frmMain.WordToTag(cboTag.Items[cboTag.ItemIndex]);
-  item.TagString := txtMemo.Text;
+  Meta.Updated := TTimeZone.Local.ToUniversalTime(Now);
+  Item.Text := txtTitle.Text;
+  Item.Tag := WordToTag(cboTag.Items[cboTag.ItemIndex]);
+  Item.TagString := txtMemo.Text;
   frmMain.SaveData;
   Hide;
-end;
-
-procedure TfrmNote.NewItem();
-begin
-  nEditing := -1;
-  txtTitle.Text := '';
-  txtMemo.Text := '';
-  btnDelete.Visible := false;
-  Show;
-  txtTitle.SetFocus;
-end;
-
-procedure TfrmNote.EditItem(itemId: integer);
-var
-  item: TListViewItem;
-  i: integer;
-  tagName: string;
-begin
-  nEditing := itemId;
-  item := frmMain.lstItems.Items[nEditing];
-  txtTitle.Text := item.Text;
-  tagName := frmMain.TagToWord(item.Tag);
-  for i := 0 to cboTag.items.Count - 1 do
-  begin
-    if cboTag.items[i] = tagName then
-    begin
-      cboTag.ItemIndex := i;
-      Break;
-    end;
-  end;
-  txtMemo.Text := item.TagString;
-  btnDelete.Visible := true;
-  Show;
-  txtMemo.SetFocus;
-end;
-
-procedure TfrmNote.FormCreate(Sender: TObject);
-var
-  i: integer;
-  tagName: string;
-begin
-  for i := 1 to frmMain.lstTags.Items.Count-1 do
-  begin
-    tagName := frmMain.lstTags.Items[i];
-    if (tagName <> '') and (tagName.Chars[i] <> '#') then
-    begin
-      cboTag.Items.Add(tagName);
-    end;
-  end;
 end;
 
 end.

@@ -265,15 +265,15 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="main.pas">
+        <DCCReference Include="Main.pas">
             <Form>frmMain</Form>
             <FormType>fmx</FormType>
         </DCCReference>
-        <DCCReference Include="note.pas">
+        <DCCReference Include="Note.pas">
             <Form>frmNote</Form>
             <FormType>fmx</FormType>
         </DCCReference>
-        <DCCReference Include="ListViewSaveLoad.pas"/>
+        <DCCReference Include="ListViewUtils.pas"/>
         <DCCReference Include="Model.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>

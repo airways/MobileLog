@@ -7,7 +7,6 @@ object frmNote: TfrmNote
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
-  OnCreate = FormCreate
   DesignerMasterStyle = 3
   object btnSave: TButton
     Anchors = [akRight, akBottom]
@@ -34,6 +33,7 @@ object frmNote: TfrmNote
   object txtMemo: TMemo
     Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
     DataDetectorTypes = []
+    TextSettings.WordWrap = True
     Anchors = [akLeft, akTop, akRight, akBottom]
     Position.X = 8.000000000000000000
     Position.Y = 72.000000000000000000
@@ -41,8 +41,8 @@ object frmNote: TfrmNote
     Size.Height = 401.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 1
-    Viewport.Width = 385.000000000000000000
-    Viewport.Height = 393.000000000000000000
+    Viewport.Width = 393.000000000000000000
+    Viewport.Height = 401.000000000000000000
   end
   object txtTitle: TEdit
     Touch.InteractiveGestures = [LongTap, DoubleTap]
@@ -66,6 +66,31 @@ object frmNote: TfrmNote
     OnClick = btnDeleteClick
   end
   object cboTag: TComboBox
+    Items.Strings = (
+      '- General -'
+      'Book'
+      'Goal'
+      'Movie'
+      'Note'
+      'Podcast'
+      'Shopping List'
+      'Todo'
+      '- Journaling -'
+      'Gratitude'
+      'Habit'
+      'Victory'
+      '- Health -'
+      'Blood Pressure'
+      'Blood Sugar'
+      'Exercise'
+      'Food Eaten'
+      'Medication'
+      'Meditation'
+      'Mood'
+      'Symptoms'
+      'Walk'
+      'Water Intake'
+      'Weight')
     Position.X = 72.000000000000000000
     Position.Y = 40.000000000000000000
     Size.Width = 329.000000000000000000

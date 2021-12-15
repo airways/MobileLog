@@ -23,8 +23,8 @@ object frmMain: TfrmMain
     OnClick = btnAddClick
   end
   object lstItems: TListView
-    ItemAppearanceClassName = 'TListItemAppearance'
-    ItemEditAppearanceClassName = 'TListItemShowCheckAppearance'
+    ItemAppearanceClassName = 'TListItemRightDetailAppearance'
+    ItemEditAppearanceClassName = 'TListItemRightDetailDeleteAppearance'
     HeaderAppearanceClassName = 'TListHeaderObjects'
     FooterAppearanceClassName = 'TListHeaderObjects'
     Anchors = [akLeft, akTop, akRight, akBottom]
@@ -34,77 +34,5 @@ object frmMain: TfrmMain
     TabOrder = 1
     OnDblClick = lstItemsDblClick
     OnItemClick = lstItemsItemClick
-  end
-  object lstTags: TListBox
-    Position.X = 8.000000000000000000
-    Position.Y = 384.000000000000000000
-    Size.Width = 65.000000000000000000
-    Size.Height = 25.000000000000000000
-    Size.PlatformDefault = False
-    TabOrder = 4
-    OnPaint = lstTagsPaint
-    CanFocus = False
-    DisableFocusEffect = True
-    Items.Strings = (
-      '#Tags#'
-      '- General -'
-      'Book'
-      'Goal'
-      'Movie'
-      'Note'
-      'Podcast'
-      'Shopping List'
-      'Todo'
-      ''
-      ''
-      ''
-      ''
-      ''
-      ''
-      '- Journaling -'
-      'Gratitude'
-      'Habit'
-      'Victory'
-      ''
-      ''
-      ''
-      ''
-      ''
-      ''
-      '- Health -'
-      'Blood Pressure'
-      'Blood Sugar'
-      'Exercise'
-      'Food Eaten'
-      'Medication'
-      'Meditation'
-      'Mood'
-      'Symptoms'
-      'Walk'
-      'Water Intake'
-      'Weight'
-      ''
-      ''
-      ''
-      ''
-      ''
-      ''
-      '')
-    DefaultItemStyles.ItemStyle = ''
-    DefaultItemStyles.GroupHeaderStyle = ''
-    DefaultItemStyles.GroupFooterStyle = ''
-    Viewport.Width = 45.000000000000000000
-    Viewport.Height = 21.000000000000000000
-  end
-  object FDTable1: TFDTable
-    Connection = FDConnection1
-    Left = 520
-    Top = 368
-  end
-  object FDConnection1: TFDConnection
-    Params.Strings = (
-      'DriverID=SQLite')
-    Left = 464
-    Top = 360
   end
 end
