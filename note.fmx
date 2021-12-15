@@ -1,0 +1,94 @@
+object frmNote: TfrmNote
+  Left = 0
+  Top = 0
+  Caption = 'Note'
+  ClientHeight = 522
+  ClientWidth = 413
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnCreate = FormCreate
+  DesignerMasterStyle = 3
+  object btnSave: TButton
+    Anchors = [akRight, akBottom]
+    Position.X = 320.000000000000000000
+    Position.Y = 482.000000000000000000
+    Size.Width = 80.000000000000000000
+    Size.Height = 31.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 2
+    Text = 'Save'
+    OnClick = btnSaveClick
+  end
+  object btnCancel: TButton
+    Anchors = [akLeft, akBottom]
+    Position.X = 5.000000000000000000
+    Position.Y = 482.000000000000000000
+    Size.Width = 80.000000000000000000
+    Size.Height = 31.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 4
+    Text = 'Cancel'
+    OnClick = btnCancelClick
+  end
+  object txtMemo: TMemo
+    Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+    DataDetectorTypes = []
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    Position.X = 8.000000000000000000
+    Position.Y = 72.000000000000000000
+    Size.Width = 393.000000000000000000
+    Size.Height = 401.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    Viewport.Width = 385.000000000000000000
+    Viewport.Height = 393.000000000000000000
+  end
+  object txtTitle: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    Anchors = [akLeft, akTop, akRight]
+    TabOrder = 0
+    Position.X = 72.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 329.000000000000000000
+    Size.Height = 32.000000000000000000
+    Size.PlatformDefault = False
+  end
+  object btnDelete: TButton
+    Anchors = [akLeft, akBottom]
+    Position.X = 165.000000000000000000
+    Position.Y = 482.000000000000000000
+    Size.Width = 80.000000000000000000
+    Size.Height = 31.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 3
+    Text = 'Delete'
+    OnClick = btnDeleteClick
+  end
+  object cboTag: TComboBox
+    Position.X = 72.000000000000000000
+    Position.Y = 40.000000000000000000
+    Size.Width = 329.000000000000000000
+    Size.Height = 32.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 5
+  end
+  object Label1: TLabel
+    Position.X = 8.000000000000000000
+    Position.Y = 16.000000000000000000
+    Size.Width = 65.000000000000000000
+    Size.Height = 23.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'Name'
+    TabOrder = 7
+  end
+  object Label2: TLabel
+    Position.X = 8.000000000000000000
+    Position.Y = 40.000000000000000000
+    Size.Width = 65.000000000000000000
+    Size.Height = 23.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'Tag'
+    TabOrder = 6
+  end
+end

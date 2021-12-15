@@ -1,0 +1,5 @@
+platform select remote-android
+platform connect unix-abstract-connect:///data/local/tmp/debug.sock device=RF8MC12VSER
+settings set plugin.jit-loader.gdb.enable-jit-breakpoint false
+process attach -pid=22289
+target symbols add "C:\Projects\Delphi\log\Android64\Debug\log\debug\liblog.so"

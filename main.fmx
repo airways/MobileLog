@@ -1,0 +1,110 @@
+object frmMain: TfrmMain
+  Left = 0
+  Top = 0
+  Caption = 'Log'
+  ClientHeight = 480
+  ClientWidth = 640
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnCreate = FormCreate
+  DesignerMasterStyle = 0
+  object btnAdd: TButton
+    Anchors = [akRight, akBottom]
+    StyledSettings = [Family, Style, FontColor]
+    Position.X = 584.000000000000000000
+    Position.Y = 440.000000000000000000
+    Size.Width = 48.000000000000000000
+    Size.Height = 30.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    Text = '+'
+    TextSettings.Font.Size = 25.000000000000000000
+    OnClick = btnAddClick
+  end
+  object lstItems: TListView
+    ItemAppearanceClassName = 'TListItemAppearance'
+    ItemEditAppearanceClassName = 'TListItemShowCheckAppearance'
+    HeaderAppearanceClassName = 'TListHeaderObjects'
+    FooterAppearanceClassName = 'TListHeaderObjects'
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    Size.Width = 641.000000000000000000
+    Size.Height = 433.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    OnDblClick = lstItemsDblClick
+    OnItemClick = lstItemsItemClick
+  end
+  object lstTags: TListBox
+    Position.X = 8.000000000000000000
+    Position.Y = 384.000000000000000000
+    Size.Width = 65.000000000000000000
+    Size.Height = 25.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 4
+    OnPaint = lstTagsPaint
+    CanFocus = False
+    DisableFocusEffect = True
+    Items.Strings = (
+      '#Tags#'
+      '- General -'
+      'Book'
+      'Goal'
+      'Movie'
+      'Note'
+      'Podcast'
+      'Shopping List'
+      'Todo'
+      ''
+      ''
+      ''
+      ''
+      ''
+      ''
+      '- Journaling -'
+      'Gratitude'
+      'Habit'
+      'Victory'
+      ''
+      ''
+      ''
+      ''
+      ''
+      ''
+      '- Health -'
+      'Blood Pressure'
+      'Blood Sugar'
+      'Exercise'
+      'Food Eaten'
+      'Medication'
+      'Meditation'
+      'Mood'
+      'Symptoms'
+      'Walk'
+      'Water Intake'
+      'Weight'
+      ''
+      ''
+      ''
+      ''
+      ''
+      ''
+      '')
+    DefaultItemStyles.ItemStyle = ''
+    DefaultItemStyles.GroupHeaderStyle = ''
+    DefaultItemStyles.GroupFooterStyle = ''
+    Viewport.Width = 45.000000000000000000
+    Viewport.Height = 21.000000000000000000
+  end
+  object FDTable1: TFDTable
+    Connection = FDConnection1
+    Left = 520
+    Top = 368
+  end
+  object FDConnection1: TFDConnection
+    Params.Strings = (
+      'DriverID=SQLite')
+    Left = 464
+    Top = 360
+  end
+end
