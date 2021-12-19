@@ -18,11 +18,13 @@ type
   TfrmMain = class(TForm)
     btnAdd: TButton;
     lstItems: TListView;
+    tLoadData: TTimer;
     procedure btnAddClick(Sender: TObject);
     procedure lstItemsDblClick(Sender: TObject);
     procedure lstItemsItemClick(const Sender: TObject;
       const AItem: TListViewItem);
     procedure FormCreate(Sender: TObject);
+    procedure tLoadDataTimer(Sender: TObject);
   private
     { Private declarations }
     sDataFile: string;
@@ -48,6 +50,12 @@ uses
 procedure TfrmMain.SaveData;
 begin
   ListViewSaveToFile(lstItems, sDataFile);
+end;
+
+procedure TfrmMain.tLoadDataTimer(Sender: TObject);
+begin
+   tLoadData.Enabled := false;
+  LoadData;
 end;
 
 procedure TfrmMain.LoadData;
@@ -80,13 +88,12 @@ begin
     ShowMessage('No data file selected for this platform!');
     Application.Terminate;
   end;
-  LoadData;
 end;
 
 
 procedure TfrmMain.lstItemsDblClick(Sender: TObject);
 begin
-  if lstItems.Selected <> nil then
+  if (lstItems.Selected <> nil) and (lstItems.Selected.TagObject <> nil) then
   begin
     frmNote.EditItem(lstItems.Selected.Index);
   end;
@@ -95,7 +102,7 @@ end;
 procedure TfrmMain.lstItemsItemClick(const Sender: TObject;
   const AItem: TListViewItem);
 begin
-   if lstItems.Selected <> nil then
+   if (lstItems.Selected <> nil) and (lstItems.Selected.TagObject <> nil) then
   begin
     frmNote.EditItem(lstItems.Selected.Index);
   end;

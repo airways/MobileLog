@@ -13,17 +13,21 @@ type
     btnSave: TButton;
     btnCancel: TButton;
     txtMemo: TMemo;
-    txtTitle: TEdit;
     btnDelete: TButton;
     cboTag: TComboBox;
-    Label1: TLabel;
     Label2: TLabel;
+    Label3: TLabel;
+    txtTagValue: TEdit;
     procedure btnSaveClick(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);
     procedure btnDeleteClick(Sender: TObject);
+    procedure txtMemoEnter(Sender: TObject);
+    procedure txtMemoExit(Sender: TObject);
+    procedure txtMemoChange(Sender: TObject);
   private
     { Private declarations }
     nEditing: integer;
+    bChangingMemo: boolean;
   public
     { Public declarations }
     procedure NewItem();
@@ -40,8 +44,11 @@ implementation
 uses
   Main,
   Model,
+  ListViewUtils,
   System.DateUtils,
-  FMX.DialogService;
+  FMX.DialogService,
+  System.UIConsts,
+  StrUtils;
 
 {$R *.fmx}
 
@@ -49,12 +56,13 @@ uses
 
 procedure TfrmNote.NewItem();
 begin
+  bChangingMemo := false;
   nEditing := -1;
-  txtTitle.Text := '';
+  txtTagValue.Text := '';
   txtMemo.Text := '';
   btnDelete.Visible := false;
   Show;
-  txtTitle.SetFocus;
+  cboTag.SetFocus;
 end;
 
 procedure TfrmNote.EditItem(itemId: integer);
@@ -62,11 +70,14 @@ var
   item: TListViewItem;
   i: integer;
   tagName: string;
+  meta: TMetaFields;
 begin
+  bChangingMemo := false;
   nEditing := itemId;
   item := frmMain.lstItems.Items[nEditing];
-  txtTitle.Text := item.Text;
+  meta := TMetaFields(item.TagObject);
   tagName := TagToWord(item.Tag);
+  txtTagValue.Text := meta.TagValue;
   for i := 0 to cboTag.items.Count - 1 do
   begin
     if cboTag.Items[i] = tagName then
@@ -114,6 +125,41 @@ begin
   end;
 end;
 
+procedure TfrmNote.txtMemoChange(Sender: TObject);
+begin
+  if not bChangingMemo and (txtMemo.Text = '') then
+  begin
+    bChangingMemo := true;
+    txtMemo.Text := 'Memo';
+    bChangingMemo := false;
+    txtMemo.FontColor := claDarkgray;
+  end else begin
+    txtMemo.FontColor := claBlack;
+  end;
+end;
+
+procedure TfrmNote.txtMemoEnter(Sender: TObject);
+begin
+  if not bChangingMemo and (txtMemo.Text = 'Memo') and (txtMemo.FontColor = claDarkgray) then
+  begin
+    bChangingMemo := true;
+    txtMemo.Text := '';
+    bChangingMemo := false;
+    txtMemo.FontColor := claBlack;
+  end;
+end;
+
+procedure TfrmNote.txtMemoExit(Sender: TObject);
+begin
+  if not bChangingMemo and (txtMemo.Text = '') then
+  begin
+    bChangingMemo := true;
+    txtMemo.Text := 'Memo';
+    bChangingMemo := false;
+    txtMemo.FontColor := claDarkgray;
+  end;
+end;
+
 {* Event Handlers *}
 
 procedure TfrmNote.btnCancelClick(Sender: TObject);
@@ -147,23 +193,59 @@ var
   Item: TListViewItem;
   Meta: TMetaFields;
   LocalDateTime: TDateTime;
+  newTag: integer;
+  newMemo: string;
+  currDate: string;
+  lastDate: string;
+  addAtIndex: integer;
 begin
   if nEditing = -1 then
   begin
-    Item := frmMain.lstItems.Items.Insert(0);
+    addAtIndex := 0;
+
     Meta := TMetaFields.Create;
-    Item.TagObject := Meta;
     Meta.Created := TTimeZone.Local.ToUniversalTime(Now);
-    LocalDateTime := TTimeZone.Local.ToLocalTime(meta.Created);
-    Item.Detail := DateTimeToStr(LocalDateTime);
+
+    if frmMain.lstItems.Items.Count > 0 then
+    begin
+      if (frmMain.lstItems.Items[0].TagObject = nil) then // Heading item
+      begin
+        lastDate := frmMain.lstItems.Items[0].Text;
+        DateTimeToString(currDate, 'yy-mm-dd dddd', TTimeZone.Local.ToLocalTime(meta.Created));
+        if lastDate <> currDate then
+        begin
+          AddHeadingRowIfNeeded(frmMain.lstItems, meta, true);
+        end else begin
+          addAtIndex := 1;
+        end;
+      end;
+    end;
+
+    Item := frmMain.lstItems.Items.Insert(addAtIndex);
+    Item.TagObject := Meta;
   end else begin
     Item := frmMain.lstItems.Items[nEditing];
     Meta := TMetaFields(item.TagObject);
   end;
+
   Meta.Updated := TTimeZone.Local.ToUniversalTime(Now);
-  Item.Text := txtTitle.Text;
-  Item.Tag := WordToTag(cboTag.Items[cboTag.ItemIndex]);
-  Item.TagString := txtMemo.Text;
+  Meta.TagValue := txtTagValue.Text;
+
+  if cboTag.ItemIndex > -1 then
+  begin
+    newTag := WordToTag(cboTag.Items[cboTag.ItemIndex]);
+  end else begin
+    newTag := 0;
+  end;
+  if (txtMemo.Text = 'Memo') and (txtMemo.FontColor = claDarkgray) then
+  begin
+    newMemo := '';
+  end else begin
+    newMemo := txtMemo.Text;
+  end;
+
+  RenderListItem(Item, meta, newTag, newMemo);
+
   frmMain.SaveData;
   Hide;
 end;

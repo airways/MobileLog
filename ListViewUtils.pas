@@ -7,15 +7,20 @@ uses
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs,
   FMX.Controls.Presentation, FMX.StdCtrls, FMX.ListView.Types,
   FMX.ListView.Appearances, FMX.ListView.Adapters.Base, FMX.ListView,
-  StrUtils;
+  StrUtils,
+
+  Model;
 
 procedure ListViewSaveToFile(ListView: TListView; const FileName: string);
-         procedure ListViewLoadFromFile(ListView: TListView; const FileName: string);
+procedure ListViewLoadFromFile(ListView: TListView; const FileName: string);
+procedure RenderListItem(var Item: TListViewItem; meta: TMetaFields;
+                         tag: integer; memo: string);
+procedure AddHeadingRowIfNeeded(ListView: TListView; meta: TMetaFields; addToTop: boolean);
 
 implementation
 
 uses
-  Model, System.DateUtils;
+  Note, System.DateUtils;
 
 procedure ListViewSaveToFile(ListView: TListView; const FileName: string);
   procedure AddValueToLine(var Line: string; const Text: string);
@@ -54,9 +59,10 @@ begin
   try
     for i := 0 to ListView.Items.Count-1 do begin
       meta := TMetaFields(ListView.Items[i].TagObject);
+      if meta = nil then continue;
 
       // Title and Tag
-      AddValueToLine(LatestLine, ListView.Items[i].Text);
+      AddValueToLine(LatestLine, meta.TagValue);
       AddValueToLine(LatestLine, ListView.Items[i].Tag.Tostring);
 
       // Meta Fields
@@ -76,6 +82,92 @@ begin
   end;
 end;
 
+procedure RenderListItem(var Item: TListViewItem; meta: TMetaFields;
+                         tag: integer; memo: string);
+var
+  LocalDateTime: TDateTime;
+  time: string;
+begin
+  LocalDateTime := TTimeZone.Local.ToLocalTime(meta.Created);
+  Item.Detail := '';
+
+  // Title
+//  Item.Text := frmNote.TagToWord(tag) + StrUtils.IfThen(tag > 0, StrUtils.IfThen(meta.TagValue <> '', ': ', '') + meta.TagValue, '');
+  Item.Text := frmNote.TagToWord(tag);
+  if (Item.Text <> '') and (meta.TagValue <> '') then
+  begin
+    Item.Text := Item.Text + ': ';
+  end;
+  Item.Text := Item.Text + meta.TagValue;
+  
+  // Tag (type) -- this is a string encoded as an integer, up to 12 characters
+  Item.Tag := tag;
+
+  // Body
+  Item.TagString := memo.Replace('~e', #3)
+                        .Replace('~t~', #9)
+                        .Replace('~n~', #10)
+                        .Replace('~r~', #13);
+
+  // Item details
+  DateTimeToString(time, 'hh:nn am/pm', TTimeZone.Local.ToLocalTime(meta.Created));
+  Item.Detail := time;
+  if Item.TagString <> '' then
+  begin
+    Item.Detail := Item.Detail + ';';
+    Item.Detail := Item.Detail + ' ' + Item.TagString.Substring(0, 100);
+    Item.Detail := Item.Detail.Trim;
+    Item.Detail := Item.Detail.Replace(#3, ' ')
+                              .Replace(#9, ' ')
+                              .Replace(#10, ' ')
+                              .Replace(#13, ' ');;
+  end;
+
+end;
+
+procedure AddHeadingRowIfNeeded(ListView: TListView; meta: TMetaFields; addToTop: boolean);
+var
+  currDate: string;
+  lastDate: string;
+  Item: TListViewItem;
+begin
+  DateTimeToString(currDate, 'yy-mm-dd dddd', TTimeZone.Local.ToLocalTime(meta.Created));
+
+  if addToTop then
+  begin
+    if (ListView.Items.Count > 0) then
+    begin
+      if (TMetaFields(ListView.Items[0].TagObject) <> nil) then
+      begin
+        DateTimeToString(lastDate, 'yy-mm-dd dddd', TTimeZone.Local.ToLocalTime(TMetaFields(ListView.Items[0].TagObject).Created));
+      end
+      else if (ListView.Items.Count > 1) then
+      begin
+        DateTimeToString(lastDate, 'yy-mm-dd dddd', TTimeZone.Local.ToLocalTime(TMetaFields(ListView.Items[1].TagObject).Created));
+      end;
+    end;
+  end else begin
+    if (ListView.Items.Count > 0) and (TMetaFields(ListView.Items[ListView.Items.Count-1].TagObject) <> nil) then
+    begin
+      DateTimeToString(lastDate, 'yy-mm-dd dddd', TTimeZone.Local.ToLocalTime(TMetaFields(ListView.Items[ListView.Items.Count-1].TagObject).Created));
+    end;
+  end;
+  
+  // Add heading row if we are on a new date
+  if currDate <> lastDate then
+  begin
+    if addToTop then
+    begin
+      Item := ListView.Items.Insert(0);
+    end else begin
+      Item := ListView.Items.Add;
+    end;
+    Item.Text := currDate;
+    lastDate := currDate;
+    Item.Purpose := TListItemPurpose.Header;
+  end;
+end;
+
 procedure ListViewLoadFromFile(ListView: TListView; const FileName: string);
 var
   Strings: TStringList;
@@ -84,44 +176,38 @@ var
   SubFields: TStringDynArray;
   Item: TListViewItem;
   meta: TMetaFields;
-  LocalDateTime: TDateTime;
 begin
   Strings := TStringList.Create;
   try
     Strings.LoadFromFile(FileName);
     ListView.Items.Clear;
+
     for i := 0 to Strings.Count-1 do begin
       Fields := SplitString(Strings[i], #9);
-
-      Item := ListView.Items.Add;
       meta := TMetaFields.Create;
-      Item.TagObject := meta;
 
+      meta.TagValue := Fields[0];
+      
       // Meta Fields
       SubFields := SplitString(Fields[2], #3);
       case SubFields[0].ToInteger() of        // Meta Fields Version
         1: begin
           meta.Created := ISO8601ToDate(SubFields[1]);
           meta.Updated := ISO8601ToDate(SubFields[2]);
+          if Length(SubFields) > 2 then
+          begin
+            meta.TagValue := meta.TagValue + SubFields[3];
+          end;
         end;
       end;
+      AddHeadingRowIfNeeded(ListView, meta, false);
 
-      LocalDateTime := TTimeZone.Local.ToLocalTime(meta.Created);
-      Item.Detail := DateTimeToStr(LocalDateTime);
+      Item := ListView.Items.Add;
+      Item.TagObject := meta;
 
-      // Title and tag
-      Item.Text := Fields[0].Replace('~e~', #3)
-                                 .Replace('~t~', #9)
-                                 .Replace('~n~', #10)
-                                 .Replace('~r~', #13);
-      Item.Tag := Fields[1].ToInteger;
+      
 
-
-      // Body
-      Item.TagString := Fields[3].Replace('~e~', #3)
-                                 .Replace('~t~', #9)
-                                 .Replace('~n~', #10)
-                                 .Replace('~r~', #13);
+      RenderListItem(Item, meta, Fields[1].ToInteger, fields[3]);
     end;
   finally
     Strings.Free;

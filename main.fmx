@@ -23,8 +23,8 @@ object frmMain: TfrmMain
     OnClick = btnAddClick
   end
   object lstItems: TListView
-    ItemAppearanceClassName = 'TListItemRightDetailAppearance'
-    ItemEditAppearanceClassName = 'TListItemRightDetailDeleteAppearance'
+    ItemAppearanceClassName = 'TImageListItemBottomDetailAppearance'
+    ItemEditAppearanceClassName = 'TImageListItemBottomDetailShowCheckAppearance'
     HeaderAppearanceClassName = 'TListHeaderObjects'
     FooterAppearanceClassName = 'TListHeaderObjects'
     Anchors = [akLeft, akTop, akRight, akBottom]
@@ -34,5 +34,11 @@ object frmMain: TfrmMain
     TabOrder = 1
     OnDblClick = lstItemsDblClick
     OnItemClick = lstItemsItemClick
+  end
+  object tLoadData: TTimer
+    Interval = 100
+    OnTimer = tLoadDataTimer
+    Left = 24
+    Top = 416
   end
 end
