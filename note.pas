@@ -6,7 +6,7 @@ uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Memo.Types,
   FMX.Edit, FMX.ScrollBox, FMX.Memo, FMX.Controls.Presentation, FMX.StdCtrls,
-  FMX.ListView.Appearances, FMX.ListBox;
+  FMX.ListView.Appearances, FMX.ListBox, FMX.DateTimeCtrls;
 
 type
   TfrmNote = class(TForm)
@@ -18,6 +18,10 @@ type
     Label2: TLabel;
     Label3: TLabel;
     txtTagValue: TEdit;
+    dateEntryOn: TDateEdit;
+    timeEntryAt: TTimeEdit;
+    Label1: TLabel;
+    Label4: TLabel;
     procedure btnSaveClick(Sender: TObject);
     procedure btnCancelClick(Sender: TObject);
     procedure btnDeleteClick(Sender: TObject);
@@ -60,6 +64,8 @@ begin
   nEditing := -1;
   txtTagValue.Text := '';
   txtMemo.Text := '';
+  dateEntryOn.Date := Now;
+  timeEntryAt.Time := Now;
   btnDelete.Visible := false;
   Show;
   cboTag.SetFocus;
@@ -71,6 +77,7 @@ var
   i: integer;
   tagName: string;
   meta: TMetaFields;
+  LocalDateTime: TDateTime;
 begin
   bChangingMemo := false;
   nEditing := itemId;
@@ -87,6 +94,9 @@ begin
     end;
   end;
   txtMemo.Text := item.TagString;
+  LocalDateTime := TTimeZone.Local.ToLocalTime(meta.EntryDateTime);
+  dateEntryOn.Date := LocalDateTime;
+  timeEntryAt.Time := LocalDateTime;
   btnDelete.Visible := true;
   Show;
   txtMemo.SetFocus;
@@ -229,6 +239,8 @@ begin
   end;
 
   Meta.Updated := TTimeZone.Local.ToUniversalTime(Now);
+  Meta.EntryDateTime := TTimeZone.Local.ToUniversalTime(dateEntryOn.Date + timeEntryAt.Time);
+
   Meta.TagValue := txtTagValue.Text;
 
   if cboTag.ItemIndex > -1 then

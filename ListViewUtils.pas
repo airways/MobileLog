@@ -66,9 +66,10 @@ begin
       AddValueToLine(LatestLine, ListView.Items[i].Tag.Tostring);
 
       // Meta Fields
-      AddSubValueToLine(LatestLine, '1');     // Meta Fields Version
+      AddSubValueToLine(LatestLine, '2');     // Meta Fields Version
       AddSubValueToLine(LatestLine, DateToISO8601(meta.Created));
       AddSubValueToLine(LatestLine, DateToISO8601(meta.Updated));
+      AddSubValueToLine(LatestLine, DateToISO8601(meta.EntryDateTime));
       AddValueToLine(LatestLine, '');         // Terminate meta field subvalues
 
       // Body
@@ -110,7 +111,7 @@ begin
                         .Replace('~r~', #13);
 
   // Item details
-  DateTimeToString(time, 'hh:nn am/pm', TTimeZone.Local.ToLocalTime(meta.Created));
+  DateTimeToString(time, 'hh:nn am/pm', TTimeZone.Local.ToLocalTime(meta.EntryDateTime));
   Item.Detail := time;
   if Item.TagString <> '' then
   begin
@@ -194,10 +195,16 @@ begin
         1: begin
           meta.Created := ISO8601ToDate(SubFields[1]);
           meta.Updated := ISO8601ToDate(SubFields[2]);
+          meta.EntryDateTime := meta.Created;
           if Length(SubFields) > 2 then
           begin
             meta.TagValue := meta.TagValue + SubFields[3];
           end;
+        end;
+        2: begin
+          meta.Created := ISO8601ToDate(SubFields[1]);
+          meta.Updated := ISO8601ToDate(SubFields[2]);
+          meta.EntryDateTime := ISO8601ToDate(SubFields[3]);
         end;
       end;
       AddHeadingRowIfNeeded(ListView, meta, false);
