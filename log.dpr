@@ -5,13 +5,14 @@ uses
   FMX.Forms,
   Main in 'Main.pas' {frmMain},
   Note in 'Note.pas' {frmNote},
-  ListViewUtils in 'ListViewUtils.pas',
-  Model in 'Model.pas';
+  Model in 'Model.pas',
+  MainController in 'MainController.pas' {dmMain: TDataModule};
 
 {$R *.res}
 
 begin
   Application.Initialize;
+  Application.CreateForm(TdmMain, dmMain);
   Application.CreateForm(TfrmMain, frmMain);
   Application.CreateForm(TfrmNote, frmNote);
   Application.Run;

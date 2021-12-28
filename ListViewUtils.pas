@@ -9,13 +9,13 @@ uses
   FMX.ListView.Appearances, FMX.ListView.Adapters.Base, FMX.ListView,
   StrUtils,
 
-  Model;
+  Model, Main;
 
 procedure ListViewSaveToFile(ListView: TListView; const FileName: string);
 procedure ListViewLoadFromFile(ListView: TListView; const FileName: string);
-procedure RenderListItem(var Item: TListViewItem; meta: TMetaFields;
+procedure RenderListItem(var Item: TListViewItem; meta: TLogItem;
                          tag: integer; memo: string);
-procedure AddHeadingRowIfNeeded(ListView: TListView; meta: TMetaFields; addToTop: boolean);
+procedure AddHeadingRowIfNeeded(ListView: TListView; meta: TLogItem; addToTop: boolean);
 
 implementation
 
@@ -51,14 +51,14 @@ var
   Strings: TStringList;
   LatestLine: string;
   i, j: Integer;
-  meta: TMetaFields;
+  meta: TLogItem;
 begin
   LatestLine := '';
 
   Strings := TStringList.Create;
   try
     for i := 0 to ListView.Items.Count-1 do begin
-      meta := TMetaFields(ListView.Items[i].TagObject);
+      meta := TLogItem(ListView.Items[i].TagObject);
       if meta = nil then continue;
 
       // Title and Tag
@@ -83,7 +83,7 @@ begin
   end;
 end;
 
-procedure RenderListItem(var Item: TListViewItem; meta: TMetaFields;
+procedure RenderListItem(var Item: TListViewItem; meta: TLogItem;
                          tag: integer; memo: string);
 var
   LocalDateTime: TDateTime;
@@ -126,49 +126,6 @@ begin
 
 end;
 
-procedure AddHeadingRowIfNeeded(ListView: TListView; meta: TMetaFields; addToTop: boolean);
-var
-  currDate: string;
-  lastDate: string;
-  Item: TListViewItem;
-begin
-  DateTimeToString(currDate, 'yy-mm-dd dddd', TTimeZone.Local.ToLocalTime(meta.Created));
-
-  if addToTop then
-  begin
-    if (ListView.Items.Count > 0) then
-    begin
-      if (TMetaFields(ListView.Items[0].TagObject) <> nil) then
-      begin
-        DateTimeToString(lastDate, 'yy-mm-dd dddd', TTimeZone.Local.ToLocalTime(TMetaFields(ListView.Items[0].TagObject).Created));
-      end
-      else if (ListView.Items.Count > 1) then
-      begin
-        DateTimeToString(lastDate, 'yy-mm-dd dddd', TTimeZone.Local.ToLocalTime(TMetaFields(ListView.Items[1].TagObject).Created));
-      end;
-    end;
-  end else begin
-    if (ListView.Items.Count > 0) and (TMetaFields(ListView.Items[ListView.Items.Count-1].TagObject) <> nil) then
-    begin
-      DateTimeToString(lastDate, 'yy-mm-dd dddd', TTimeZone.Local.ToLocalTime(TMetaFields(ListView.Items[ListView.Items.Count-1].TagObject).Created));
-    end;
-  end;
-  
-  // Add heading row if we are on a new date
-  if currDate <> lastDate then
-  begin
-    if addToTop then
-    begin
-      Item := ListView.Items.Insert(0);
-    end else begin
-      Item := ListView.Items.Add;
-    end;
-    Item.Text := currDate;
-    lastDate := currDate;
-    Item.Purpose := TListItemPurpose.Header;
-  end;
-end;
-
 procedure ListViewLoadFromFile(ListView: TListView; const FileName: string);
 var
   Strings: TStringList;
@@ -176,7 +133,7 @@ var
   Fields: TStringDynArray;
   SubFields: TStringDynArray;
   Item: TListViewItem;
-  meta: TMetaFields;
+  meta: TLogItem;
 begin
   Strings := TStringList.Create;
   try
@@ -185,7 +142,7 @@ begin
 
     for i := 0 to Strings.Count-1 do begin
       Fields := SplitString(Strings[i], #9);
-      meta := TMetaFields.Create;
+      meta := TLogItem.Create;
 
       meta.TagValue := Fields[0];
       

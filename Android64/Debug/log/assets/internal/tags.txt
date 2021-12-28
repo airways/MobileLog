@@ -1,0 +1,24 @@
+- General -
+Book
+Goal
+Movie
+Note
+Podcast
+Shopping List
+Todo
+- Journaling -
+Gratitude
+Habit
+Victory
+- Health -
+Blood Pressure
+Blood Sugar
+Exercise
+Food Eaten
+Medication
+Meditation
+Mood
+Symptoms
+Walk
+Water Intake
+Weight
