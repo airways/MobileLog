@@ -9,17 +9,18 @@ object frmMain: TfrmMain
   FormFactor.Devices = [Desktop]
   DesignerMasterStyle = 0
   object btnAdd: TButton
+    Action = dmMain.aNewItem
     Anchors = [akRight, akBottom]
+    Enabled = True
     StyledSettings = [Family, Style, FontColor]
+    ImageIndex = -1
     Position.X = 584.000000000000000000
     Position.Y = 440.000000000000000000
     Size.Width = 48.000000000000000000
     Size.Height = 30.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
-    Text = '+'
     TextSettings.Font.Size = 25.000000000000000000
-    OnClick = btnAddClick
   end
   object lstItems: TListView
     ItemAppearanceClassName = 'TImageListItemBottomDetailAppearance'

@@ -21,7 +21,6 @@ type
     btnAdd: TButton;
     lstItems: TListView;
     tLoadData: TTimer;
-    procedure btnAddClick(Sender: TObject);
     procedure lstItemsDblClick(Sender: TObject);
     procedure lstItemsItemClick(const Sender: TObject;
       const AItem: TListViewItem);
@@ -29,6 +28,7 @@ type
   private
     { Private declarations }
     sDataFile: string;
+    procedure DoEdit;
   public
     { Public declarations }
     procedure ShowError(msg: string; Fatal: boolean);
@@ -151,28 +151,28 @@ begin
   dmMain.RegisterMainView(Self);
 end;
 
-procedure TfrmMain.btnAddClick(Sender: TObject);
+
+procedure TfrmMain.DoEdit;
 begin
-  dmMain.NewItem;
+  if (lstItems.Selected <> nil) and (lstItems.Selected.TagObject <> nil) then
+  begin
+    //dmMain.EditItem(TLogItem(lstItems.Selected.TagObject));
+    dmMain.aEditItem.Tag := NativeInt(lstItems.Selected.TagObject);
+    dmMain.aEditItem.Execute;
+  end;
 end;
 
 {* Event Handlers *}
 
 procedure TfrmMain.lstItemsDblClick(Sender: TObject);
 begin
-  if (lstItems.Selected <> nil) and (lstItems.Selected.TagObject <> nil) then
-  begin
-    dmMain.EditItem(TLogItem(lstItems.Selected.TagObject));
-  end;
+  DoEdit;
 end;
 
 procedure TfrmMain.lstItemsItemClick(const Sender: TObject;
   const AItem: TListViewItem);
 begin
-   if (lstItems.Selected <> nil) and (lstItems.Selected.TagObject <> nil) then
-  begin
-    dmMain.EditItem(TLogItem(lstItems.Selected.TagObject));
-  end;
+  DoEdit;
 end;
 
 end.

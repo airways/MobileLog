@@ -4,10 +4,15 @@ interface
 
 uses
   System.SysUtils, System.Classes, System.Generics.Collections,
-  Model, Interfaces;
+  Model, Interfaces, System.Actions, FMX.ActnList;
 
 type
   TdmMain = class(TDataModule, IMainController)
+    ActionList1: TActionList;
+    aNewItem: TAction;
+    aEditItem: TAction;
+    procedure aNewItemExecute(Sender: TObject);
+    procedure aEditItemExecute(Sender: TObject);
   private
     { Private declarations }
     sDataFile: string;
@@ -273,6 +278,19 @@ begin
     Items.Insert(0, Item);
   end;
   SaveData;
+end;
+
+procedure TdmMain.aEditItemExecute(Sender: TObject);
+var
+  Item: TLogItem;
+begin
+  Item := TLogItem(aEditItem.Tag);
+  dmMain.EditItem(Item);
+end;
+
+procedure TdmMain.aNewItemExecute(Sender: TObject);
+begin
+  NewItem;
 end;
 
 procedure TdmMain.DeleteItem(Item: TLogItem);

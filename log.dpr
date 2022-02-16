@@ -6,7 +6,8 @@ uses
   Main in 'Main.pas' {frmMain},
   Note in 'Note.pas' {frmNote},
   Model in 'Model.pas',
-  MainController in 'MainController.pas' {dmMain: TDataModule};
+  MainController in 'MainController.pas' {dmMain: TDataModule},
+  Interfaces in 'Interfaces.pas';
 
 {$R *.res}
 
